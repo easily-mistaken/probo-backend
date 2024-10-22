@@ -20,3 +20,18 @@ export const createSymbol = (req: Request, res: Response): any => {
 
     res.status(201).send({ message: `Symbol ${stockSymbol} created`});
 };
+
+export const reset = (req: Request, res: Response): any => {
+    for (let key in inrBalances) {
+        delete inrBalances[key];
+    }
+
+    for (let key in stockBalances) {
+    delete stockBalances[key];
+    }
+
+    for (let key in orderbook) {
+        delete orderbook[key];
+    }
+    res.status(200).send({ message: "Reset done"});
+};
