@@ -1,4 +1,4 @@
-import {Request, Response} from "express";
+import { Request, Response } from "express";
 import { inrBalances, stockBalances } from "../config/globals";
 
 export const createUser = (req: Request, res: Response): any => {

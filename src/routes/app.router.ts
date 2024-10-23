@@ -1,6 +1,6 @@
 import express from 'express';
 import { createUser } from "../controlllers/user";
-import { createSymbol } from "../controlllers/trade";
+import { createSymbol, reset } from "../controlllers/trade";
 import {
     getInrBalanceByUserId,
     getInrBalances,
@@ -8,7 +8,7 @@ import {
     getStockBalancesByUserId,
     onRamp
 } from "../controlllers/balance";
-import { getOrderbook, viewOrders } from "../controlllers/orders"
+import { buyOrder, getOrderbook, sellOrder, viewOrders } from "../controlllers/orders"
 
 const router = express.Router();
 
