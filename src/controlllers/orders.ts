@@ -83,6 +83,26 @@ export const sellOrder = (req: Request, res: Response): any => {
         pseudoType = "no";
     }
 
-    
+
 
 };
+
+export const cancelOrder = (req: Request, res: Response): any => {
+    const { userId, stockSymbol, price, orderId } = req.body;
+    const stockType = req.body.stockType as "yes" | "no";
+    const userExists = inrBalances[userId];
+    const symbolExists = orderbook[stockSymbol];
+  
+    if (!userExists) {
+      res.send({ error: `User with user Id ${userId} does not exist` });
+      return;
+    }
+    if (!symbolExists) {
+      res.send({ error: `Stock with stockSymbol ${stockSymbol} does not exist` });
+      return;
+    }
+  
+    console.log(orderbook[stockSymbol][stockType]);
+  
+    res.send({ message: "Sell order canceled" });
+}

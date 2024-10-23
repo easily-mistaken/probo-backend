@@ -1,6 +1,6 @@
 import express from 'express';
 import { createUser } from "../controlllers/user";
-import { createSymbol, reset } from "../controlllers/trade";
+import { createSymbol, mintTokens, reset } from "../controlllers/trade";
 import {
     getInrBalanceByUserId,
     getInrBalances,

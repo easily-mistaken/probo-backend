@@ -22,7 +22,7 @@ export const createSymbol = (req: Request, res: Response): any => {
     res.status(201).send({ message: `Symbol ${stockSymbol} created`});
 };
 
-export const mintToken = (req: Request, res: Response) => {
+export const mintTokens = (req: Request, res: Response) => {
     const { userId, stockSymbol } = req.body as MINT_REQUEST;
     const quantity = Number(req.body.quantity);
     const price = Number(req.body.price) || 10;
