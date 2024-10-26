@@ -48,7 +48,21 @@ export const buyOrder = (req: Request, res: Response): any => {
         return;
     }
 
+    // Sort and Filter the orderbook for less than or equal to price
+    const buyOrderArray = orderbook[stockSymbol][stockType]
+    .sort((a, b) => a.price - b.price)
+    .filter((item) => item.price <= price && item.total != 0);
 
+    // Check for total available quantity of all stocks that can match
+    let availableQuantity = buyOrderArray.reduce(
+        (acc, item) => acc + item.total, 0 );
+
+    // No stocks for sale -> Create a Pseudo Sell Order
+    if (availableQuantity == 0) {
+        initiateSellOrder(stockSymbol, stockType, price, quantity, userId, "buy");
+        res.send({ message: "Bid Submitted" });
+        return;
+    }
 };
 
 export const sellOrder = (req: Request, res: Response): any => {
@@ -106,3 +120,46 @@ export const cancelOrder = (req: Request, res: Response): any => {
   
     res.send({ message: "Sell order canceled" });
 }
+
+// Create a Sell order (Either exit or buy(pseudo sell))
+const initiateSellOrder = (
+  stockSymbol: string,
+  stockType: "yes" | "no",
+  price: PriceOptions,
+  quantity: number,
+  userId: string,
+  orderType: "buy" | "sell"
+) => {
+  let newPrice: PriceOptions =
+    orderType == "buy" ? ((10 - price) as PriceOptions) : price;
+  let newType: "yes" | "no" =
+    orderType == "buy" ? (stockType == "yes" ? "no" : "yes") : stockType;
+
+  // pseudo order -> Lock inr balance of the user (in paise)
+  if (orderType == "buy") {
+    inrBalances[userId].balance -= quantity * newPrice * 100;
+    inrBalances[userId].locked += quantity * newPrice * 100;
+  }
+
+  // actual sell order -> Lock stock balance of user
+  if (orderType == "sell") {
+    stockBalances[userId][stockSymbol][newType]!.quantity -= quantity;
+    stockBalances[userId][stockSymbol][newType]!.locked += quantity;
+  }
+
+  const sellOrderArray = orderbook[stockSymbol][newType];
+  const sellOrder = sellOrderArray.find((item) => item.price == newPrice);
+
+  // Add order to orderbook
+  if (sellOrder) {
+    sellOrder.total += quantity;
+    sellOrder.orders.push({ userId, id: 15, quantity, type: orderType });
+  } else {
+    sellOrderArray.push({
+      price: newPrice,
+      total: quantity,
+      orders: [{ userId, id: 10, quantity, type: orderType }],
+    });
+  }
+  publishOrderbook(stockSymbol);
+};

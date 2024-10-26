@@ -8,7 +8,7 @@ import {
     getStockBalancesByUserId,
     onRamp
 } from "../controlllers/balance";
-import { buyOrder, getOrderbook, sellOrder, viewOrders } from "../controlllers/orders"
+import { buyOrder, cancelOrder, getOrderbook, sellOrder, viewOrders } from "../controlllers/orders"
 
 const router = express.Router();
 
